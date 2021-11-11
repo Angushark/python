@@ -1,0 +1,125 @@
+import discord
+from discord.ext import commands
+import os 
+import random
+from datetime import datetime
+
+
+
+intents = discord.Intents.all()
+
+bot = commands.Bot(command_prefix='$',  intents=intents)
+bot.remove_command('help')
+
+
+
+@bot.event
+async def on_ready():
+    print("i am online")
+
+
+
+
+@bot.command()
+async def ping(ctx):  #ctx 上下文 A:(上文) B:(下文)
+    await ctx.send(f'{round(bot.latency*1000)} (ms)')
+
+
+@bot.command()
+async def sleep(ctx):
+    await ctx.send("晚安~")
+
+
+@bot.command()
+async def python(ctx):
+    pic = discord.File(os.path.join("discordbot", "py.png"))
+    await ctx.send(file=pic)
+
+
+@bot.command()
+async def guess(ctx):
+    
+    ans = random.randint(1, 100)
+    print(ans)
+    
+    await ctx.send("請在10次內猜1-100的數字")
+    count = 1
+    def is_valid(m):
+        return m.author == ctx.author
+    
+    for _ in range(10):
+        try:
+        
+        
+            Guess = await bot.wait_for("message", timeout=300.0)
+            
+            
+            
+            if Guess.content == "退出遊戲":
+                await ctx.send(f"已退出遊戲，你總共猜了{count}次")
+                return
+            
+            elif int(Guess.content) == ans:
+                await ctx.send(f"答對，你總共猜了{count}次")
+                return
+            
+            
+            else:
+                
+                if int(Guess.content) > ans:
+                    await ctx.send("太大")
+                    count = count+1
+                
+                elif int(Guess.content) < ans:
+                    await ctx.send("太小")
+                    count = count+1
+                
+                else:
+                    await ctx.send("請輸入數字")
+
+
+
+
+        except:
+            await ctx.send("請輸入數字")
+    await ctx.send("猜太多次了")
+
+
+@bot.command()
+async def month(ctx):
+    today = datetime.today()
+    await ctx.send(today.month)
+
+
+@bot.command() 
+async def help(ctx): 
+    embed = discord.Embed(title="nice bot", description="A Very Nice bot. List of commands are:", color=0xeee657)
+
+    embed.add_field(name="$ping", value="傳出這隻機器人的人延遲", inline=False) 
+    embed.add_field(name="$sleep", value="當你想睡覺的時候可以用", inline=False)
+    embed.add_field(name="$python", value="就python阿", inline=False)
+    embed.add_field(name="$guess", value="小遊戲", inline=False) 
+    embed.add_field(name="$month", value="傳出月份", inline=False) 
+    embed.add_field(name="$help", value="我", inline=False)
+
+    await ctx.send(embed=embed)
+
+
+@bot.command() 
+async def test(ctx):
+   
+    
+    retStr = str("""```css\nThis is some colored Text```""")
+    await ctx.send(retStr)
+
+
+
+
+
+
+
+
+token = 'ODYzMDQyMTA1MzMyODU4ODkx.YOhImA.B2Rj23Ci4cbAJFJoLn7YLp4KT8U'
+
+bot.run(token)
+
